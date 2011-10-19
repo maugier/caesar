@@ -15,12 +15,14 @@ sub learn {
     my ($this, $tokens) = @_;
     die "Incorrect state $this->{state}" unless $this->{state} eq 'learning';
 
-    unshift @$tokens, $begin;
-    push @$tokens, $end;
+    my @tok = @$tokens;
 
-    while (@$tokens > 1) {
-        $this->{data}{$tokens->[0]}{$tokens->[1]}++;
-        shift @$tokens;
+    unshift @tok, $begin;
+    push @tok, $end;
+
+    while (@tok > 1) {
+        $this->{data}{$tok[0]}{$tok[1]}++;
+        shift @tok;
     }
 
 }
@@ -45,16 +47,18 @@ sub match {
     my ($this, $tokens) = @_;
     die "Incorrect state $this->{state}" unless $this->{state} eq 'matching';
 
-    unshift @$tokens, $begin;
-    push @$tokens, $end;
+    my @tok = @$tokens;
+
+    unshift @tok, $begin;
+    push @tok, $end;
 
     my $p = 1;
 
-    while (@$tokens > 2) {
-        $p *= $this->{data}{$tokens->[0]}{$tokens->[1]};
-        shift @$tokens;
-    }
+    while (@tok > 1) {
 
+        $p *= $this->{data}{$tok[0]}{$tok[1]};
+        shift @tok;
+    }
     return $p;
 
 }

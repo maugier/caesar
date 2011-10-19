@@ -7,7 +7,7 @@ my $m = Markov->new();
 
 while(<>) {
     chomp;
-    $m->learn([split //]);
+    $m->learn([split //, lc]);
 }
 
 $m->commit;
