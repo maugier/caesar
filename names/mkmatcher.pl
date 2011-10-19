@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 
 use Markov;
-use Data::Dumper;
+use Storable 'store_fd';
 
 my $m = Markov->new();
 
@@ -12,4 +12,5 @@ while(<>) {
 
 $m->commit;
 
-print Dumper($m);
+store_fd($m, *STDOUT);
+
