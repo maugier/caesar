@@ -1,5 +1,14 @@
 #!/usr/bin/perl
 
+my %names;
+
+open NAMES, '<names/fr/all'
+    or die "Can't read names: $!\n";
+
+while(<NAMES>) {
+    $names{$_}=1;
+}
+close NAMES;
 
 sub caesar {
 	my ($shift, $str) = @_;
@@ -10,12 +19,22 @@ sub caesar {
 	return (join "",@r);
 }
 
+sub tuplecmp {
+    $a->[0] <=> $b->[0] || $a->[1] <=> $b->[1];
+}
 
 print STDERR "Entrez le nom: ";
 my $name = uc <>;
 
 chomp $name;
 
-for (0 .. 25) {
-	print "Shift $_: ",caesar($_,$name),"\n";
-}
+my @answ = map { caesar($_,$name) } (0 .. 25);
+
+print STDERR "Possibilités:\n"
+
+print "$_\n" for @answ;
+
+<>;
+
+
+
