@@ -1,14 +1,22 @@
 #!/usr/bin/perl
 
+use Data::Dumper;
+use Markov;
+use Storable;
+use Term::ANSIColor;
+
 my %names;
 
 open NAMES, '<names/fr/all'
     or die "Can't read names: $!\n";
 
 while(<NAMES>) {
-    $names{$_}=1;
+    chomp;
+    $names{uc $_}=1;
 }
 close NAMES;
+
+my $matcher = retrieve('names/fr/all.pl');
 
 sub caesar {
 	my ($shift, $str) = @_;
@@ -19,22 +27,35 @@ sub caesar {
 	return (join "",@r);
 }
 
-sub tuplecmp {
-    $a->[0] <=> $b->[0] || $a->[1] <=> $b->[1];
-}
+print colored(['bold white'], `figlet <<< caesar`);
 
-print STDERR "Entrez le nom: ";
+print STDERR colored(['bold white'],"Entrez le nom: ");
 my $name = uc <>;
 
 chomp $name;
 
 my @answ = map { caesar($_,$name) } (0 .. 25);
 
-print STDERR "Possibilités:\n"
+print STDERR colored(['bold white'], "Possibilités:\n");
 
 print "$_\n" for @answ;
 
 <>;
+my %answ;
 
+# stat match
+for (@answ) {
+    $answ{$_} = [0, $matcher->match([split //, lc])];
+}
 
+# known names
+for (@answ) {
+    $answ{$_} = [1,0] if $names{$_};
+}
 
+sub tuplecmp {
+    my ($x,$y) = @_;
+    $x->[0] <=> $y->[0] || $x->[1] <=> $y->[1];
+}
+
+print "$_, $answ{$_}->[0], $answ{$_}->[1]\n" for sort { tuplecmp($answ{$b},$answ{$a}); } @answ;
