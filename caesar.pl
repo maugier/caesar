@@ -19,7 +19,7 @@ sub addmstr {
 
 
 cbreak();
-halfdelay(5);
+#halfdelay(5);
 noecho();
 nonl();
 curs_set(0);
@@ -33,17 +33,37 @@ my $banner = <<EOF
 EOF
 ;
 
+sub box {
+        my ($y, $x, $h, $w, $title) = @_;
+        $win->addch($y-1,$x-1,'+');
+        $win->addch($y+$h,$x+$w,'+');
+        $win->addch($y-1,$x+$w,'+');
+        $win->addch($y+$h,$x-1,'+');
+        $win->addch($y-1,$_,'-') for $x .. ($x + $w - 1);
+        $win->addch($y+$h,$_,'-') for $x .. ($x + $w - 1);
+        $win->addch($_,$x-1, '|') for $y .. ($y + $h - 1);
+        $win->addch($_,$x+$w,'|') for $y .. ($y + $h - 1);
+        $win->addstr($y-1, $x, $title);
+}
+
 sub draw {
     
     $win->clear;
     $win->border(0,0,0,0,0,0,0,0);
     addmstr(2,($COLS-30)/2,$banner);
 
+    box(10,5,1,$COLS-10, "original");
+    $win->addstr(10,5, (join '', @buffer));
+
+    box(14,5,26,$COLS-10, "clef+probabilité");
+
+
     if (@buffer) {
-        my $c = 10;
+        my $c = 14;
         my $str = join '', @buffer;
         for ($caesar->break($str)) {
-            $win->addstr($c++, 5, $_->[1]);
+            my $out = sprintf " %02d | % 8f | %s", $_->[0], $_->[2][1], $_->[1];
+            $win->addstr($c++, 5, $out);
         }
     }
 
@@ -55,16 +75,17 @@ sub draw {
 
 while(1) {
 
+    draw();
+
 	my $key = $win->getch;
     if ($key =~ /[a-z ]/) {
         push @buffer, $key;
-    } elsif ($key == KEY_BACKSPACE) {
+    } elsif ($key eq KEY_BACKSPACE || $key eq KEY_DELETE) {
         pop @buffer;
-    } elsif ($key == KEY_ENTER) {
+    } elsif ($key eq KEY_ENTER) {
         last;
     }
 
-    draw();
 
 }
 

@@ -58,7 +58,6 @@ sub break {
     for (@answ) {
         my $sum = 0;
         for (split /[^A-Z]+/, uc $_->[1]) {
-            print STDERR "Testing [$_] Sum = $sum\n";
             $sum += safelog($self->{matcher}->match([split //, lc]));
         }
         $_->[2] = [0, $sum];
