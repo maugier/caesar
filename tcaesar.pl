@@ -18,6 +18,13 @@ close NAMES;
 
 my $matcher = retrieve('names/fr/all.pl');
 
+sub safelog {
+    my $n = shift;
+    return log $n if ($n > 0);
+    return -50;
+        
+}
+
 sub caesar {
 	my ($shift, $str) = @_;
 	my @r;
@@ -45,7 +52,7 @@ my %answ;
 
 # stat match
 for (@answ) {
-    $answ{$_} = [0, $matcher->match([split //, lc])];
+    $answ{$_} = [0, safelog($matcher->match([split //, lc]))];
 }
 
 # known names

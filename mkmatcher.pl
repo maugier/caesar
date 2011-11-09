@@ -10,6 +10,7 @@ while(<>) {
     $m->learn([split //, lc]);
 }
 
+$m->bias('a' .. 'z');
 $m->commit;
 
 store_fd($m, *STDOUT);

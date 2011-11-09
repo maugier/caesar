@@ -67,8 +67,8 @@ sub bias {
 
     my ($this, @letters) = @_;
     for my $a ($begin,@letters) {
-    for my $b ($end @letters) {
-        $this->{data}{$a}{$b}
+    for my $b ($end, @letters) {
+        $this->{data}{$a}{$b}++;
     }}
 
 }
