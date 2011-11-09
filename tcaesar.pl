@@ -18,6 +18,11 @@ close NAMES;
 
 my $matcher = retrieve('names/fr/all.pl');
 
+sub is_valid {
+    my $char = shift;
+    return (ord $char >= ord 'A' && ord $char <= ord 'Z');
+}
+
 sub safelog {
     my $n = shift;
     return log $n if ($n > 0);
@@ -28,8 +33,13 @@ sub safelog {
 sub caesar {
 	my ($shift, $str) = @_;
 	my @r;
-	for (split  //,$str) {
-		push @r, chr (65 + (((ord $_) - 65 + $shift) % 26));
+	for (split  //, uc $str) {
+
+        if (is_valid($_)) {
+    		push @r, chr (65 + (((ord $_) - 65 + $shift) % 26));
+        } else {
+            push @r, $_;
+        }
 	}
 	return (join "",@r);
 }
@@ -52,7 +62,12 @@ my %answ;
 
 # stat match
 for (@answ) {
-    $answ{$_} = [0, safelog($matcher->match([split //, lc]))];
+    my $sum = 0;
+    for (split /[^A-Z]+/, uc) {
+        print STDERR "Testing [$_] Sum = $sum\n";
+        $sum += safelog($matcher->match([split //, lc]));
+    }
+    $answ{$_} = [0, $sum];
 }
 
 # known names
