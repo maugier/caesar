@@ -1,8 +1,12 @@
 #!/usr/bin/perl
 
 use Curses;
+use Caesar;
+
+my $caesar = new Caesar;
 
 my $win = new Curses($LINES,$COLS,0,0);
+my @buffer;
 
 sub addmstr {
         my ($y, $x, $text) = @_;
@@ -29,16 +33,38 @@ my $banner = <<EOF
 EOF
 ;
 
-$win->border(0,0,0,0,0,0,0,0);
-addmstr(2,($COLS-30)/2,$banner);
+sub draw {
+    
+    $win->clear;
+    $win->border(0,0,0,0,0,0,0,0);
+    addmstr(2,($COLS-30)/2,$banner);
 
-$win->refresh;
+    if (@buffer) {
+        my $c = 10;
+        my $str = join '', @buffer;
+        for ($caesar->break($str)) {
+            $win->addstr($c++, 5, $_->[1]);
+        }
+    }
+
+    $win->refresh;
+
+}
+
+
 
 while(1) {
 
 	my $key = $win->getch;
-	last if $key eq 'q';
-	$win->refresh;
+    if ($key =~ /[a-z ]/) {
+        push @buffer, $key;
+    } elsif ($key == KEY_BACKSPACE) {
+        pop @buffer;
+    } elsif ($key == KEY_ENTER) {
+        last;
+    }
+
+    draw();
 
 }
 
