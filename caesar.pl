@@ -23,6 +23,14 @@ cbreak();
 noecho();
 nonl();
 curs_set(0);
+start_color();
+
+init_pair(1,COLOR_CYAN, COLOR_BLACK);
+init_pair(2,COLOR_GREEN, COLOR_BLACK);
+init_pair(3,COLOR_YELLOW, COLOR_BLACK);
+init_pair(4,COLOR_RED, COLOR_BLACK);
+init_pair(5,COLOR_YELLOW, COLOR_BLUE);
+
 
 my $banner = <<EOF
     ___ __ _  ___  ___  __ _ _ __ 
@@ -48,20 +56,25 @@ sub box {
 
 sub draw {
     
+    $win->attrset(A_NORMAL);
     $win->clear;
     $win->border(0,0,0,0,0,0,0,0);
+    $win->attrset(COLOR_PAIR(1));
     addmstr(2,($COLS-30)/2,$banner);
 
     box(10,5,1,$COLS-10, "original");
-    $win->addstr(10,5, (join '', @buffer));
-
     box(14,5,26,$COLS-10, "clef+probabilité");
 
+    $win->attrset(COLOR_PAIR(5) | A_BOLD);
+    $win->addstr(10,5, (join '', @buffer));
 
     if (@buffer) {
         my $c = 14;
         my $str = join '', @buffer;
         for ($caesar->break($str)) {
+	    $win->attrset(COLOR_PAIR(4) | A_BOLD) if $c > 18;
+	    $win->attrset(COLOR_PAIR(3) | A_BOLD) if $c > 14;
+	    $win->attrset(COLOR_PAIR(2) | A_BOLD) if $_->[2][0];
             my $out = sprintf " %02d | % 8f | %s", $_->[0], $_->[2][1], $_->[1];
             $win->addstr($c++, 5, $out);
         }
@@ -80,7 +93,7 @@ while(1) {
 	my $key = $win->getch;
     if ($key =~ /[a-z ]/) {
         push @buffer, $key;
-    } elsif ($key eq KEY_BACKSPACE || $key eq KEY_DELETE) {
+    } elsif (ord $key == 127 ) {
         pop @buffer;
     } elsif ($key eq KEY_ENTER) {
         last;
