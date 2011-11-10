@@ -79,7 +79,7 @@ sub draw {
 	    $win->attrset(COLOR_PAIR(4));
 	    $win->attrset(COLOR_PAIR(3) | A_BOLD) if $normer->($_->[2][1]) > 0.15;
 	    $win->attrset(COLOR_PAIR(2) | A_BOLD) if $_->[2][0];
-            my $out = sprintf " %02d | % 8f | %s", $_->[0], $normer->($_->[2][1]), $_->[1];
+            my $out = sprintf " %02d | % 8f | %s", $_->[0], $_->[2][1], $_->[1];
             $win->addstr($c++, 5, $out);
         }
     }
