@@ -2,6 +2,7 @@
 
 use Curses;
 use Caesar;
+use Stat;
 
 my $caesar = new Caesar;
 
@@ -71,11 +72,14 @@ sub draw {
     if (@buffer) {
         my $c = 14;
         my $str = join '', @buffer;
-        for ($caesar->break($str)) {
-	    $win->attrset(COLOR_PAIR(4) | A_BOLD) if $c > 18;
-	    $win->attrset(COLOR_PAIR(3) | A_BOLD) if $c > 14;
+	my @break = $caesar->break($str);
+	my $normer = Stat->new(map {$_->[2][1]} @break)->norm;
+
+        for (@break) {
+	    $win->attrset(COLOR_PAIR(4));
+	    $win->attrset(COLOR_PAIR(3) | A_BOLD) if $normer->($_->[2][1]) > 0.15;
 	    $win->attrset(COLOR_PAIR(2) | A_BOLD) if $_->[2][0];
-            my $out = sprintf " %02d | % 8f | %s", $_->[0], $_->[2][1], $_->[1];
+            my $out = sprintf " %02d | % 8f | %s", $_->[0], $normer->($_->[2][1]), $_->[1];
             $win->addstr($c++, 5, $out);
         }
     }
