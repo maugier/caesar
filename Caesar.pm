@@ -3,7 +3,7 @@
 package Caesar ;
 
 use Markov;
-use Storable;
+#use Storable;
 
 sub new {
 
@@ -18,7 +18,8 @@ sub new {
     }
     close NAMES;
 
-    $self->{matcher} = retrieve('names/fr/all.pl');
+    #$self->{matcher} = retrieve('names/fr/all.pl');
+    $self->{matcher} = eval `cat names/fr/all.eval`;
 
     bless $self;
 }
