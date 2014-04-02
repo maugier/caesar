@@ -95,8 +95,8 @@ while(1) {
     draw();
 
 	my $key = $win->getch;
-    if ($key =~ /[a-z ]/) {
-        push @buffer, $key;
+    if ($key =~ /[a-zA-Z ]/) {
+        push @buffer, lc($key);
     } elsif (ord $key == 127 ) {
         pop @buffer;
     } elsif ($key eq KEY_ENTER) {
