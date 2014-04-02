@@ -5,6 +5,7 @@ sub new { bless [@_]; }
 
 sub avg { 
 	my $self = shift;
+	return 0 if @$self == 0;
 	my $sum = 0;
 	$sum += $_ for @$self;
 	return $sum / @$self;
